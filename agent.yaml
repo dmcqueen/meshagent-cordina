@@ -1,0 +1,65 @@
+version: v1
+kind: ServiceTemplate
+metadata:
+  name: cordina
+  description: MeshAgent service that pairs the Cordina chatbot with the email worker.
+  repo: https://github.com/dmcqueen/meshagent-cordina
+  icon: ""
+  annotations:
+    meshagent.service.id: meshagent.cordina
+agents:
+  - name: cordina-agent
+    description: Handles chat conversations while dispatching outbound email on demand.
+    annotations:
+      meshagent.agent.type: ChatBot
+variables:
+  - name: MESHAGENT_API_URL
+    description: MeshAgent control plane host.
+    required: true
+  - name: MESHAGENT_PROJECT_ID
+    description: Project that owns the target room.
+    required: true
+  - name: MESHAGENT_API_KEY
+    description: API key used for agent authentication.
+    required: true
+  - name: MESHAGENT_MAIL_DOMAIN
+    description: SMTP domain for mailbox provisioning.
+    required: false
+    default: mail.meshagent.life
+  - name: SMTP_HOSTNAME
+    description: Optional SMTP relay override.
+    required: false
+  - name: EMAIL_ADDRESS
+    description: Mailbox address used as the service sender.
+    required: true
+  - name: EMAIL_QUEUE
+    description: Queue name processed by the mail worker.
+    required: false
+ports:
+  - num: "*"
+    type: http
+    endpoints:
+      - path: "/chat"
+        meshagent:
+          identity: Cordina Agent
+          api:
+        mcp:
+      - path: "/mail"
+        meshagent:
+          identity: Cordina Agent
+          api:
+        mcp:
+    liveness: "/chat"
+container:
+  environment:
+    MESHAGENT_API_URL: ${MESHAGENT_API_URL}
+    MESHAGENT_PROJECT_ID: ${MESHAGENT_PROJECT_ID}
+    MESHAGENT_API_KEY: ${MESHAGENT_API_KEY}
+    MESHAGENT_MAIL_DOMAIN: ${MESHAGENT_MAIL_DOMAIN}
+    SMTP_HOSTNAME: ${SMTP_HOSTNAME}
+    EMAIL_ADDRESS: ${EMAIL_ADDRESS}
+    EMAIL_QUEUE: ${EMAIL_QUEUE}
+  image: us-central1-docker.pkg.dev/meshagent-life/meshagent-public/cordina:{SERVER_VERSION}-esgz
+  command: "/usr/bin/env meshagent service run /app/main.py"
+  storage: []
+external: []
