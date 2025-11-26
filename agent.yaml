@@ -27,6 +27,7 @@ ports:
     liveness: "/chat"
 container:
   environment:
-    EMAIL_ADDRESS: ${EMAIL_ADDRESS}
+    - name: EMAIL_ADDRESS
+      value: ${EMAIL_ADDRESS}
   image: us-central1-docker.pkg.dev/meshagent-life/meshagent-public/cordina:latest
   command: "/usr/bin/env meshagent service run /app/main.py"
