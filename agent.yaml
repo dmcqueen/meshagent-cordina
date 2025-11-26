@@ -4,7 +4,6 @@ metadata:
   name: cordina
   description: MeshAgent service that pairs the Cordina chatbot with the email worker.
   repo: https://github.com/dmcqueen/meshagent-cordina
-  icon: ""
   annotations:
     meshagent.service.id: meshagent.cordina
 agents:
@@ -22,13 +21,9 @@ ports:
       - path: "/chat"
         meshagent:
           identity: Cordina Agent
-          api:
-        mcp:
       - path: "/mail"
         meshagent:
           identity: Cordina Agent
-          api:
-        mcp:
     liveness: "/chat"
 container:
   environment:
